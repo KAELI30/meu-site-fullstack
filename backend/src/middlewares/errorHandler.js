@@ -1,6 +1,9 @@
-function errorHandler(err, req, res, next) {
-  console.error('Erro capturado:', err);
-  return res.status(500).json({ error: 'Erro interno do servidor' });
-}
+module.exports = (error, req, res, next) => {
+  console.error('Erro capturado:', error);
 
-module.exports = errorHandler;
+  const status = error.statusCode || 500;
+
+  res.status(status).json({
+    error: error.message || 'Erro interno do servidor'
+  });
+};

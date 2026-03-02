@@ -6,6 +6,8 @@ const TaskRepository = require('../repositories/TaskRepository');
 const TaskController = require('../controllers/TaskController');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/authMiddleware');
+const authenticate = require('../middlewares/authMiddleware')
+const authorize = require('../middlewares/roleMiddleware')
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
@@ -22,7 +24,15 @@ router.post('/login', (req, res) => {
   res.json({ token });
 });
 
+router.get('/admin/tasks',
+  authenticate,
+  authorize('ADMIN'),
+  TaskController.getAllTasks
+)
+
 router.use(authMiddleware);
+
+router.patch('/tasks/:id/status', TaskController.updateTaskStatus)
 
 router.get('/tasks',authMiddleware, async (req, res) => {
   try {
